@@ -1,6 +1,6 @@
 {
   "name": "unitycatalog-dbapi-express-middleware",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "databricks Unity Catalog express middleware",
   "main": "app.js",
   "directories": {
