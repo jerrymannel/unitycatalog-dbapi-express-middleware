@@ -1,15 +1,3 @@
-# unitycatalog-express-middleware
-databricks Unity Catalog express middleware
-
-# Installation
-
-```sh
-npm i unitycatalog-express-middleware
-```
-
-# Usage
-
-```js
 "use strict"
 const express = require("express");
 const port = process.env.PORT || 18080;
@@ -36,7 +24,7 @@ const options = {
     }
 };
 
-const UCCRUD = require("unitycatalog-dbapi-express-middleware");
+const UCCRUD = require("../app");
 
 var deptCRUD = new UCCRUD(options);
 
@@ -66,6 +54,46 @@ function init() {
             res.status(500).send(err.message);
         }
     });
+    app.get("/utils/count", async (req, res) => {
+        try {
+            let result = await deptCRUD.count(req.query);
+            res.json(result);
+        } catch (err) {
+            res.status(500).send(err.message);
+        }
+    });
+    app.post("/", async (req, res) => {
+        try {
+            let result = await deptCRUD.create(req.body);
+            res.json(result);
+        } catch (err) {
+            res.status(500).send(err.message);
+        }
+    });
+    app.put("/:id", async (req, res) => {
+        try {
+            let result = await deptCRUD.update(req.params.id, req.body, req.query);
+            res.json(result);
+        } catch (err) {
+            res.status(500).send(err.message);
+        }
+    });
+    app.delete("/:id", async (req, res) => {
+        try {
+            let result = await deptCRUD.delete(req.params.id, req.query);
+            res.json(result);
+        } catch (err) {
+            res.status(500).send(err.message);
+        }
+    });
+    app.delete("/utils/deleteMany", async (req, res) => {
+        try {
+            let result = await deptCRUD.deleteMany(req.body, req.query);
+            res.json(result);
+        } catch (err) {
+            res.status(500).send(err.message);
+        }
+    });
 
     app.listen(port, (err) => {
         if (!err) {
@@ -81,8 +109,6 @@ async function connect() {
         const dbSQLClient = new DBSQLClient();
         const client = await dbSQLClient.connect(connectionOptions);
         console.log('Connected to Databricks SQL.');
-        // Get the session and assign it to the UCCRUD session
-        deptCRUD.session = await client.openSession();
         console.log('Session opened.');
     } catch (err) {
         console.log(`Error while connecting to Databricks SQL :: ${err}`);
@@ -91,51 +117,6 @@ async function connect() {
 }
 
 (async () => {
-    await connect();
+    // await connect();
     init();
 })();
-```
-
-Full working code available under [example]("./example/server.js").
-
-# Method documentation
-
-## list(options)
-> TDB
-
-## fetchOne(value, options)
-> TDB
-
-## count(options)
-> TDB
-
-## create(data)
-> TDB
-
-## update(value, data, options)
-> TDB
-
-## delete(value, options)
-> TDB
-
-## deleteMany(values, options)
-> TDB
-
-
-# Release notes
-
-## 1.0.1
-
-* Removed logic of establishing connection from UCCRUD. This will let you share the same connection instance with multiple UCCRUD instances.
-
-## 1.0.0
-
-* First release 
-* Working APIs middleware for
-  * Fetch
-  * Fetch one
-  * Create
-  * Update one
-  * Update many
-  * Delete one
-  * Delete many
